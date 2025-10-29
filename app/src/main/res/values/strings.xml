@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">AI Blood Diagnostics</string>
+    <string name="welcome_title">Artificial Intelligence Blood Diagnostics</string>
+    <string name="login_title">Log In</string>
+    <string name="signup_title">Sign Up</string>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="diagnosis_title">Diagnosis</string>
+    <string name="doctors_title">Doctors</string>
+    <string name="appointments_title">Appointments</string>
+    <string name="payment_title">Payment</string>
+    <string name="success_title">Success</string>
+</resources>

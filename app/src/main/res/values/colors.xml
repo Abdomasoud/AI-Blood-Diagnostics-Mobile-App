@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="blue_60">#3366FF</color>
+    <color name="blue_grey_80">#B3C5FF</color>
+    <color name="pink_80">#EFB8C8</color>
+
+    <color name="blue_40">#0052CC</color>
+    <color name="blue_grey_40">#565F71</color>
+    <color name="pink_40">#7D5260</color>
+
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    
+    <color name="light_blue">#E3F2FD</color>
+    <color name="medium_blue">#2196F3</color>
+    <color name="dark_blue">#1976D2</color>
+    <color name="background_gray">#F5F5F5</color>
+</resources>
