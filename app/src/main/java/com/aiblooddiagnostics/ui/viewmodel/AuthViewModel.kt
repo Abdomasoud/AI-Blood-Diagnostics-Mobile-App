@@ -73,48 +73,62 @@ class AuthViewModel @Inject constructor(
         fullName: String,
         email: String,
         password: String,
-        mobileNumber: String,
-        dateOfBirth: String,
-        onResult: (Boolean) -> Unit
+        userType: String,
+        mobileNumber: String? = null,
+        dateOfBirth: String? = null,
+        gender: String? = null,
+        bloodType: String? = null,
+        specialization: String? = null,
+        experienceYears: Int? = null,
+        onResult: (User?) -> Unit
     ) {
         viewModelScope.launch {
             _signUpState.value = _signUpState.value.copy(isLoading = true, error = null)
             
             try {
-                // Check if user already exists
-                val existingUser = repository.getUserByEmail(email)
-                if (existingUser != null) {
-                    _signUpState.value = _signUpState.value.copy(
-                        isLoading = false,
-                        error = "User with this email already exists"
-                    )
-                    onResult(false)
-                    return@launch
-                }
-
                 val newUser = User(
                     id = UUID.randomUUID().toString(),
                     fullName = fullName,
                     email = email,
                     password = password,
-                    mobileNumber = mobileNumber.takeIf { it.isNotBlank() },
-                    dateOfBirth = dateOfBirth.takeIf { it.isNotBlank() },
-                    userType = "patient"
+                    userType = userType,
+                    mobileNumber = mobileNumber,
+                    dateOfBirth = dateOfBirth,
+                    gender = gender,
+                    bloodType = bloodType,
+                    specialization = specialization,
+                    experienceYears = experienceYears
                 )
 
-                repository.registerUser(newUser)
-                _signUpState.value = _signUpState.value.copy(
-                    isLoading = false,
-                    user = newUser,
-                    error = null
-                )
-                onResult(true)
+                val success = repository.registerUser(newUser)
+                if (success) {
+                    // Save session data
+                    sessionManager.saveLoginSession(
+                        userId = newUser.id,
+                        userType = newUser.userType,
+                        userName = newUser.fullName,
+                        userEmail = newUser.email
+                    )
+                    
+                    _signUpState.value = _signUpState.value.copy(
+                        isLoading = false,
+                        user = newUser,
+                        error = null
+                    )
+                    onResult(newUser)
+                } else {
+                    _signUpState.value = _signUpState.value.copy(
+                        isLoading = false,
+                        error = "Sign up failed. Please try again."
+                    )
+                    onResult(null)
+                }
             } catch (e: Exception) {
                 _signUpState.value = _signUpState.value.copy(
                     isLoading = false,
                     error = "Sign up failed: ${e.message}"
                 )
-                onResult(false)
+                onResult(null)
             }
         }
     }
@@ -131,5 +145,17 @@ class AuthViewModel @Inject constructor(
     
     fun getStartDestination(): String {
         return sessionManager.getStartDestination()
+    }
+    
+    fun getUserName(): String? {
+        return sessionManager.getUserName()
+    }
+    
+    fun getUserId(): String? {
+        return sessionManager.getUserId()
+    }
+    
+    fun getUserEmail(): String? {
+        return sessionManager.getUserEmail()
     }
 }

@@ -34,6 +34,10 @@ fun PatientDashboardScreen(
 ) {
     val diagnoses by viewModel.diagnoses.collectAsState()
     var selectedTab by remember { mutableStateOf(0) }
+    
+    // Get logged-in user data from session
+    val userName = authViewModel.getUserName() ?: "Patient"
+    val userId = authViewModel.getUserId() ?: "N/A"
 
     Column(
         modifier = Modifier
@@ -72,13 +76,13 @@ fun PatientDashboardScreen(
                                 color = Color.Gray
                             )
                             Text(
-                                text = "Ahmed Hassan",
+                                text = userName,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.Black
                             )
                             Text(
-                                text = "Patient ID: PAT001",
+                                text = "Patient ID: $userId",
                                 fontSize = 12.sp,
                                 color = Color.Gray
                             )
@@ -118,20 +122,20 @@ fun PatientDashboardScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             PatientActionCard(
-                title = "Chat Doctor",
-                icon = Icons.Default.Chat,
+                title = "Upload Test",
+                icon = Icons.Default.CloudUpload,
                 color = Blue60,
                 modifier = Modifier.weight(1f),
-                onClick = { 
-                    navController.navigate("chat_detail/doctor_3_patient_user_1/patient_user_1/patient")
-                }
+                onClick = { navController.navigate("upload_test") }
             )
             PatientActionCard(
-                title = "New Request",
-                icon = Icons.Default.Add,
+                title = "Chat Doctor",
+                icon = Icons.Default.Chat,
                 color = Color(0xFF4CAF50),
                 modifier = Modifier.weight(1f),
-                onClick = { navController.navigate("new_request") }
+                onClick = { 
+                    navController.navigate("chat_list/patient")
+                }
             )
         }
 
@@ -211,7 +215,7 @@ fun PatientDashboardScreen(
         Box(modifier = Modifier.weight(1f)) {
             when (selectedTab) {
                 0 -> PatientResultsContent(
-                    diagnoses = diagnoses.filter { it.patientId == "patient_1" }
+                    diagnoses = diagnoses.filter { it.patientId == userId }
                 )
                 1 -> PatientAppointmentsContent()
             }

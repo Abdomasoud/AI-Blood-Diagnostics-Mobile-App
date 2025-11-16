@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarToday
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -40,8 +42,15 @@ fun SignUpScreen(
     var password by remember { mutableStateOf("") }
     var mobileNumber by remember { mutableStateOf("") }
     var dateOfBirth by remember { mutableStateOf("") }
+    var gender by remember { mutableStateOf("") }
+    var bloodType by remember { mutableStateOf("") }
+    var specialization by remember { mutableStateOf("") }
+    var experienceYears by remember { mutableStateOf("") }
+    var selectedUserType by remember { mutableStateOf("patient") }
     var passwordVisible by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
+    var showGenderDropdown by remember { mutableStateOf(false) }
+    var showBloodTypeDropdown by remember { mutableStateOf(false) }
     val signUpState by viewModel.signUpState.collectAsState()
     val context = LocalContext.current
 
@@ -75,6 +84,44 @@ fun SignUpScreen(
         }
 
         Spacer(modifier = Modifier.height(40.dp))
+
+        // User Type Selection
+        Text(
+            text = "I am a",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.Black
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            OutlinedButton(
+                onClick = { selectedUserType = "patient" },
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = if (selectedUserType == "patient") Blue60 else Color.Transparent,
+                    contentColor = if (selectedUserType == "patient") Color.White else Blue60
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Patient")
+            }
+            OutlinedButton(
+                onClick = { selectedUserType = "doctor" },
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = if (selectedUserType == "doctor") Blue60 else Color.Transparent,
+                    contentColor = if (selectedUserType == "doctor") Color.White else Blue60
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Doctor")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         // Full Name field
         Text(
@@ -211,7 +258,7 @@ fun SignUpScreen(
             DatePickerDialog(
                 onDateSelected = { selectedDate ->
                     selectedDate?.let {
-                        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                         dateOfBirth = formatter.format(Date(it))
                     }
                     showDatePicker = false
@@ -221,6 +268,117 @@ fun SignUpScreen(
         }
 
         Spacer(modifier = Modifier.height(24.dp))
+
+        // Patient-specific fields
+        if (selectedUserType == "patient") {
+            // Gender field
+            Text(
+                text = "Gender",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedButton(
+                    onClick = { gender = "Male" },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = if (gender == "Male") Blue60 else Color.Transparent,
+                        contentColor = if (gender == "Male") Color.White else Blue60
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Male")
+                }
+                OutlinedButton(
+                    onClick = { gender = "Female" },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = if (gender == "Female") Blue60 else Color.Transparent,
+                        contentColor = if (gender == "Female") Color.White else Blue60
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Female")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Blood Type field
+            Text(
+                text = "Blood Type",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = bloodType,
+                onValueChange = { bloodType = it },
+                placeholder = { Text("e.g., O+, A-, B+", color = Color.Gray) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Blue60,
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        // Doctor-specific fields
+        if (selectedUserType == "doctor") {
+            // Specialization field
+            Text(
+                text = "Specialization",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = specialization,
+                onValueChange = { specialization = it },
+                placeholder = { Text("e.g., Hematologist", color = Color.Gray) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Blue60,
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Experience Years field
+            Text(
+                text = "Years of Experience",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = experienceYears,
+                onValueChange = { experienceYears = it.filter { char -> char.isDigit() } },
+                placeholder = { Text("e.g., 5", color = Color.Gray) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Blue60,
+                    unfocusedBorderColor = Color.LightGray
+                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
 
         // Terms text
         Text(
@@ -265,11 +423,21 @@ fun SignUpScreen(
                     fullName = fullName,
                     email = email,
                     password = password,
-                    mobileNumber = mobileNumber,
-                    dateOfBirth = dateOfBirth
-                ) { success ->
-                    if (success) {
-                        navController.navigate("dashboard") {
+                    userType = selectedUserType,
+                    mobileNumber = mobileNumber.takeIf { it.isNotBlank() },
+                    dateOfBirth = dateOfBirth.takeIf { it.isNotBlank() },
+                    gender = if (selectedUserType == "patient") gender.takeIf { it.isNotBlank() } else null,
+                    bloodType = if (selectedUserType == "patient") bloodType.takeIf { it.isNotBlank() } else null,
+                    specialization = if (selectedUserType == "doctor") specialization.takeIf { it.isNotBlank() } else null,
+                    experienceYears = if (selectedUserType == "doctor") experienceYears.toIntOrNull() else null
+                ) { user ->
+                    if (user != null) {
+                        val destination = when (user.userType) {
+                            "doctor" -> "doctor_dashboard"
+                            "patient" -> "patient_dashboard"
+                            else -> "patient_dashboard"
+                        }
+                        navController.navigate(destination) {
                             popUpTo("home") { inclusive = true }
                         }
                     }

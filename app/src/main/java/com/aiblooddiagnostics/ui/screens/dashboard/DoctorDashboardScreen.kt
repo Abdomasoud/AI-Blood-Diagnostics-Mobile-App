@@ -36,6 +36,10 @@ fun DoctorDashboardScreen(
     val patients by viewModel.patients.collectAsState()
     val diagnoses by viewModel.diagnoses.collectAsState()
     var selectedTab by remember { mutableStateOf(0) }
+    
+    // Get logged-in doctor data from session
+    val doctorName = authViewModel.getUserName() ?: "Doctor"
+    val doctorEmail = authViewModel.getUserEmail() ?: ""
 
     Column(
         modifier = Modifier
@@ -74,13 +78,13 @@ fun DoctorDashboardScreen(
                                 color = Color.Gray
                             )
                             Text(
-                                text = "Dr. Amira Mohamed",
+                                text = doctorName,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.Black
                             )
                             Text(
-                                text = "Cardiologist • 5 years exp",
+                                text = doctorEmail,
                                 fontSize = 12.sp,
                                 color = Color.Gray
                             )
@@ -152,11 +156,11 @@ fun DoctorDashboardScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             QuickActionCard(
-                title = "Add Patient",
-                icon = Icons.Default.PersonAdd,
-                color = Blue60,
+                title = "Requests",
+                icon = Icons.Default.Notifications,
+                color = Color(0xFFFF9800),
                 modifier = Modifier.weight(1f),
-                onClick = { navController.navigate("add_patient") }
+                onClick = { navController.navigate("connection_requests") }
             )
             QuickActionCard(
                 title = "AI Diagnosis",
@@ -168,10 +172,10 @@ fun DoctorDashboardScreen(
             QuickActionCard(
                 title = "Chat",
                 icon = Icons.Default.Chat,
-                color = Color(0xFFFF9800),
+                color = Blue60,
                 modifier = Modifier.weight(1f),
                 onClick = { 
-                    navController.navigate("chat_list/doctor_3/doctor")
+                    navController.navigate("chat_list/doctor")
                 }
             )
         }

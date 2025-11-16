@@ -47,6 +47,14 @@ object DatabaseModule {
     fun provideChatDao(database: BloodDiagnosticsDatabase): ChatDao = database.chatDao()
 
     @Provides
+    fun provideDoctorPatientConnectionDao(database: BloodDiagnosticsDatabase): DoctorPatientConnectionDao =
+        database.doctorPatientConnectionDao()
+
+    @Provides
+    fun provideTestUploadDao(database: BloodDiagnosticsDatabase): TestUploadDao =
+        database.testUploadDao()
+
+    @Provides
     @Singleton
     fun provideSessionManager(@ApplicationContext context: Context): SessionManager {
         return SessionManager(context)

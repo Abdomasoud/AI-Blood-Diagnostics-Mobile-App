@@ -9,10 +9,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.aiblooddiagnostics.ui.navigation.BloodDiagnosticsNavigation
 import com.aiblooddiagnostics.ui.theme.BloodDiagnosticsTheme
+import com.aiblooddiagnostics.data.manager.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    
+    @Inject
+    lateinit var sessionManager: SessionManager
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -21,7 +27,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    BloodDiagnosticsNavigation()
+                    BloodDiagnosticsNavigation(sessionManager = sessionManager)
                 }
             }
         }

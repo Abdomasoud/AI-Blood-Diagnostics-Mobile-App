@@ -11,6 +11,10 @@ data class User(
     val password: String,
     val mobileNumber: String? = null,
     val dateOfBirth: String? = null,
+    val gender: String? = null,
+    val bloodType: String? = null,
+    val specialization: String? = null,
+    val experienceYears: Int? = null,
     val userType: String = "patient", // patient, doctor
     val createdAt: Long = System.currentTimeMillis()
 )

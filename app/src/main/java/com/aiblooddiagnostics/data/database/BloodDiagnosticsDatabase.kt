@@ -12,9 +12,11 @@ import com.aiblooddiagnostics.data.model.*
         Diagnosis::class,
         Appointment::class,
         ChatMessage::class,
-        ChatRoom::class
+        ChatRoom::class,
+        DoctorPatientConnection::class,
+        TestUpload::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -25,4 +27,6 @@ abstract class BloodDiagnosticsDatabase : RoomDatabase() {
     abstract fun diagnosisDao(): DiagnosisDao
     abstract fun appointmentDao(): AppointmentDao
     abstract fun chatDao(): ChatDao
+    abstract fun doctorPatientConnectionDao(): DoctorPatientConnectionDao
+    abstract fun testUploadDao(): TestUploadDao
 }

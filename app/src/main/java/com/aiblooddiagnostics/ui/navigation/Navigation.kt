@@ -16,6 +16,8 @@ import com.aiblooddiagnostics.ui.screens.dashboard.PatientDashboardScreen
 import com.aiblooddiagnostics.ui.screens.diagnosis.DiagnosisScreen
 import com.aiblooddiagnostics.ui.screens.patient.AddPatientScreen
 import com.aiblooddiagnostics.ui.screens.patient.PatientDetailScreen
+import com.aiblooddiagnostics.ui.screens.patient.UploadTestScreen
+import com.aiblooddiagnostics.ui.screens.patient.SelectDoctorScreen
 import com.aiblooddiagnostics.ui.screens.request.NewRequestScreen
 import com.aiblooddiagnostics.ui.screens.doctors.DoctorsScreen
 import com.aiblooddiagnostics.ui.screens.doctors.DoctorInfoScreen
@@ -25,12 +27,15 @@ import com.aiblooddiagnostics.ui.screens.payment.AddCardScreen
 import com.aiblooddiagnostics.ui.screens.payment.PaymentScreen
 import com.aiblooddiagnostics.ui.screens.success.SuccessScreen
 import com.aiblooddiagnostics.ui.screens.chat.ChatListScreen
-import com.aiblooddiagnostics.ui.screens.chat.ChatDetailScreen
+import com.aiblooddiagnostics.ui.screens.chat.ChatRoomScreen
+import com.aiblooddiagnostics.ui.screens.doctor.ConnectionRequestsScreen
+import com.aiblooddiagnostics.data.manager.SessionManager
 
 @Composable
 fun BloodDiagnosticsNavigation(
     navController: NavHostController = rememberNavController(),
-    authViewModel: AuthViewModel = hiltViewModel()
+    authViewModel: AuthViewModel = hiltViewModel(),
+    sessionManager: SessionManager
 ) {
     val startDestination = authViewModel.getStartDestination()
     
@@ -82,6 +87,20 @@ fun BloodDiagnosticsNavigation(
             NewRequestScreen(navController = navController)
         }
         
+        composable("upload_test") {
+            UploadTestScreen(navController = navController)
+        }
+        
+        composable("select_doctor") {
+            SelectDoctorScreen(navController = navController)
+        }
+        
+        composable("connection_requests") {
+            ConnectionRequestsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
         composable("doctors") {
             DoctorsScreen(navController = navController)
         }
@@ -122,25 +141,27 @@ fun BloodDiagnosticsNavigation(
             )
         }
         
-        composable("chat_list/{userId}/{userType}") { backStackEntry ->
-            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+        composable("chat_list/{userType}") { backStackEntry ->
             val userType = backStackEntry.arguments?.getString("userType") ?: "patient"
             ChatListScreen(
-                navController = navController,
-                currentUserId = userId,
-                currentUserType = userType
+                userType = userType,
+                onNavigateBack = { navController.popBackStack() },
+                onChatRoomClick = { roomId, otherUserName, testUploadId ->
+                    navController.navigate("chat_room/$roomId/$otherUserName/$testUploadId")
+                }
             )
         }
         
-        composable("chat_detail/{chatRoomId}/{userId}/{userType}") { backStackEntry ->
-            val chatRoomId = backStackEntry.arguments?.getString("chatRoomId") ?: ""
-            val userId = backStackEntry.arguments?.getString("userId") ?: ""
-            val userType = backStackEntry.arguments?.getString("userType") ?: "patient"
-            ChatDetailScreen(
-                navController = navController,
-                chatRoomId = chatRoomId,
-                currentUserId = userId,
-                currentUserType = userType
+        composable("chat_room/{roomId}/{otherUserName}/{testUploadId}") { backStackEntry ->
+            val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
+            val otherUserName = backStackEntry.arguments?.getString("otherUserName") ?: ""
+            val testUploadId = backStackEntry.arguments?.getString("testUploadId") ?: ""
+            ChatRoomScreen(
+                roomId = roomId,
+                otherUserName = otherUserName,
+                testUploadId = if (testUploadId.isEmpty()) null else testUploadId,
+                onNavigateBack = { navController.popBackStack() },
+                sessionManager = sessionManager
             )
         }
     }
