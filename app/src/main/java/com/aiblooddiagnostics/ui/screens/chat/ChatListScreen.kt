@@ -16,13 +16,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.aiblooddiagnostics.ui.viewmodel.ChatViewModel
 import com.aiblooddiagnostics.data.api.models.ChatRoomData
+import com.aiblooddiagnostics.ui.theme.Blue60
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -134,15 +137,27 @@ fun ChatRoomItem(
                 modifier = Modifier
                     .size(56.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+                    .background(Color(0xFFE3F2FD)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(32.dp)
-                )
+                // Show doctor image if it's a patient viewing the chat
+                if (userType == "patient" && room.doctorProfileImageUrl != null && room.doctorProfileImageUrl.isNotEmpty()) {
+                    AsyncImage(
+                        model = room.doctorProfileImageUrl,
+                        contentDescription = "Doctor Avatar",
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        tint = Blue60,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(12.dp))

@@ -89,6 +89,7 @@ data class ChatRoom(
     val roomId: String,
     val doctorId: Int,
     val doctorName: String,
+    val doctorProfileImageUrl: String? = null,
     val patientId: Int,
     val patientName: String,
     val lastMessage: String?,
@@ -545,7 +546,7 @@ fun Route.chatRoutes() {
                     // Optimized query: filter user first in subquery, then join only needed rows
                     val query = if (userType == "doctor") {
                         """
-                        SELECT cr.id, cr.room_id, cr.doctor_id, d.full_name as doctor_name,
+                        SELECT cr.id, cr.room_id, cr.doctor_id, d.full_name as doctor_name, d.profile_image_url,
                                cr.patient_id, p.full_name as patient_name,
                                cr.last_message, cr.last_message_time, cr.connection_id
                         FROM chat_rooms cr
@@ -555,7 +556,7 @@ fun Route.chatRoutes() {
                         """
                     } else {
                         """
-                        SELECT cr.id, cr.room_id, cr.doctor_id, d.full_name as doctor_name,
+                        SELECT cr.id, cr.room_id, cr.doctor_id, d.full_name as doctor_name, d.profile_image_url,
                                cr.patient_id, p.full_name as patient_name,
                                cr.last_message, cr.last_message_time, cr.connection_id
                         FROM chat_rooms cr
@@ -573,6 +574,7 @@ fun Route.chatRoutes() {
                                     roomId = rs.getString("room_id"),
                                     doctorId = rs.getInt("doctor_id"),
                                     doctorName = rs.getString("doctor_name"),
+                                    doctorProfileImageUrl = rs.getString("profile_image_url"),
                                     patientId = rs.getInt("patient_id"),
                                     patientName = rs.getString("patient_name"),
                                     lastMessage = rs.getString("last_message"),

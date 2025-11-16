@@ -18,7 +18,8 @@ data class DoctorInfo(
     val specialization: String,
     val experienceYears: Int,
     val rating: Double,
-    val bio: String?
+    val bio: String?,
+    val profileImageUrl: String? = null
 )
 
 @Serializable
@@ -37,7 +38,7 @@ fun Route.doctorRoutes() {
                     val doctors = mutableListOf<DoctorInfo>()
                     val query = """
                         SELECT id, user_id, full_name, email, specialization, 
-                               experience_years, rating, bio 
+                               experience_years, rating, bio, profile_image_url 
                         FROM doctors 
                         ORDER BY rating DESC
                     """
@@ -53,7 +54,8 @@ fun Route.doctorRoutes() {
                                     specialization = rs.getString("specialization"),
                                     experienceYears = rs.getInt("experience_years"),
                                     rating = rs.getDouble("rating"),
-                                    bio = rs.getString("bio")
+                                    bio = rs.getString("bio"),
+                                    profileImageUrl = rs.getString("profile_image_url")
                                 )
                             )
                         }

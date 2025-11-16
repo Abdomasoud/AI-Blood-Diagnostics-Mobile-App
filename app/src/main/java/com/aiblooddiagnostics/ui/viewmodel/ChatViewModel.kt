@@ -103,9 +103,29 @@ class ChatViewModel @Inject constructor(
                 val doctorId = parts.getOrNull(1)?.toIntOrNull() ?: 0
                 val patientId = parts.getOrNull(3)?.toIntOrNull() ?: 0
                 
-                val senderId = userId.replace("doctor_", "").replace("patient_user_", "").toIntOrNull() ?: 0
+                // Extract numeric ID from userId (handles doctor_1, patient_user_8, patient_8 formats)
+                val senderId = userId
+                    .replace("doctor_", "")
+                    .replace("patient_user_", "")
+                    .replace("patient_", "")
+                    .toIntOrNull() ?: 0
+                    
                 val receiverId = if (userType == "doctor") patientId else doctorId
                 val receiverType = if (userType == "doctor") "patient" else "doctor"
+                
+                // Optimistically add message to UI immediately
+                val tempMessage = ChatMessageData(
+                    id = 0,
+                    roomId = roomId,
+                    senderId = senderId,
+                    senderType = userType,
+                    receiverId = receiverId,
+                    receiverType = receiverType,
+                    message = messageText,
+                    isRead = false,
+                    createdAt = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date())
+                )
+                _messages.value = _messages.value + tempMessage
                 
                 val response = repository.sendChatMessage(
                     roomId = roomId,
@@ -117,15 +137,19 @@ class ChatViewModel @Inject constructor(
                 )
 
                 if (response?.success == true) {
-                    // Reload messages to show the new one
+                    // Reload messages to get the actual message with correct ID from server
                     loadMessages(roomId, _currentTestUploadId.value)
                     onResult(true, null)
                 } else {
+                    // Remove the optimistic message if send failed
+                    _messages.value = _messages.value.dropLast(1)
                     onResult(false, response?.message ?: "Failed to send message")
                 }
             } catch (e: Exception) {
                 android.util.Log.e("ChatViewModel", "Error sending message", e)
                 e.printStackTrace()
+                // Remove the optimistic message on error
+                _messages.value = _messages.value.dropLast(1)
                 onResult(false, e.message ?: "Unknown error")
             }
         }

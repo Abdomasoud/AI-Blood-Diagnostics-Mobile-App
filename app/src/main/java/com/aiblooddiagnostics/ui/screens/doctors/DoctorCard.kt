@@ -39,14 +39,20 @@ fun DoctorCard(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AsyncImage(
-                    model = "https://via.placeholder.com/60",
-                    contentDescription = "Doctor Avatar",
+                Box(
                     modifier = Modifier
                         .size(60.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
+                        .clip(CircleShape)
+                        .background(Color(0xFFE3F2FD)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = "Default Avatar",
+                        modifier = Modifier.size(36.dp),
+                        tint = Blue60
+                    )
+                }
 
                 Spacer(modifier = Modifier.width(12.dp))
 

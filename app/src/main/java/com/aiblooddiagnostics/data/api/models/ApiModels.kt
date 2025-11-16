@@ -96,7 +96,8 @@ data class DoctorInfo(
     val specialization: String,
     val experienceYears: Int,
     val rating: Double,
-    val bio: String?
+    val bio: String?,
+    val profileImageUrl: String? = null
 )
 
 data class DoctorListResponse(
@@ -180,6 +181,7 @@ data class ChatRoomData(
     val roomId: String,
     val doctorId: Int,
     val doctorName: String,
+    val doctorProfileImageUrl: String? = null,
     val patientId: Int,
     val patientName: String,
     val lastMessage: String?,

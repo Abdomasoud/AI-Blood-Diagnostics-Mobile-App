@@ -1,5 +1,6 @@
 package com.aiblooddiagnostics.ui.screens.patient
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -183,14 +184,32 @@ fun DoctorCard(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                model = "https://via.placeholder.com/60",
-                contentDescription = "Doctor Avatar",
+            // Doctor profile image with placeholder
+            Box(
                 modifier = Modifier
                     .size(60.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
+                    .clip(CircleShape)
+                    .background(Color(0xFFE3F2FD)),
+                contentAlignment = Alignment.Center
+            ) {
+                if (doctor.profileImageUrl != null && doctor.profileImageUrl.isNotEmpty()) {
+                    AsyncImage(
+                        model = doctor.profileImageUrl,
+                        contentDescription = "Doctor Avatar",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = "Default Avatar",
+                        modifier = Modifier.size(36.dp),
+                        tint = Blue60
+                    )
+                }
+            }
             
             Spacer(modifier = Modifier.width(16.dp))
             

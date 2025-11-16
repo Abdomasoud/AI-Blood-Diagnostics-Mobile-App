@@ -25,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.aiblooddiagnostics.ui.viewmodel.ChatViewModel
 import com.aiblooddiagnostics.data.api.models.ChatMessageData
 import com.aiblooddiagnostics.data.manager.SessionManager
+import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -49,6 +50,13 @@ fun ChatRoomScreen(
 
     val currentUserId = sessionManager.getUserId()
     val userType = sessionManager.getUserType()
+    
+    // Extract numeric ID from user ID (doctor_1 -> 1, patient_user_8 -> 8)
+    val currentUserNumericId = currentUserId
+        ?.replace("doctor_", "")
+        ?.replace("patient_user_", "")
+        ?.replace("patient_", "")
+        ?.toIntOrNull()
 
     LaunchedEffect(roomId, testUploadId) {
         viewModel.loadMessages(roomId, testUploadId)
@@ -57,6 +65,7 @@ fun ChatRoomScreen(
     // Auto-scroll to bottom when new messages arrive
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
+            delay(100) // Small delay to ensure UI is updated
             listState.animateScrollToItem(messages.size - 1)
         }
     }
@@ -133,9 +142,11 @@ fun ChatRoomScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(messages) { message ->
+                            // Check if message is from current user by comparing both ID and type
+                            val isFromCurrentUser = (message.senderId == currentUserNumericId && message.senderType == userType)
                             ChatMessageBubble(
                                 message = message,
-                                isCurrentUser = message.senderId.toString() == currentUserId?.replace("doctor_", "")?.replace("patient_user_", "")
+                                isCurrentUser = isFromCurrentUser
                             )
                         }
                     }
@@ -163,10 +174,13 @@ fun ChatRoomScreen(
 
                 FloatingActionButton(
                     onClick = {
-                        if (messageText.isNotBlank()) {
-                            viewModel.sendMessage(roomId, messageText.trim()) { success, error ->
-                                if (success) {
-                                    messageText = ""
+                        val currentMessage = messageText
+                        if (currentMessage.isNotBlank()) {
+                            messageText = "" // Clear immediately before sending
+                            viewModel.sendMessage(roomId, currentMessage.trim()) { success, error ->
+                                if (!success) {
+                                    // Restore message if sending failed
+                                    messageText = currentMessage
                                 }
                             }
                         }
